@@ -16,7 +16,12 @@ import Navbar from "./components/navbar"
 function App() {
   const [data, setData] = useState([])
 
-  const [edit, setEdit] = useState(false)
+  const [edit, setEdit] = useState(null)
+
+  const [firstName, setFirstName] = useState("")
+  const [lastName, setLastName] = useState("")
+  const [email, setEmail] = useState("")
+  const [contact, setContact] = useState("")
 
 
   useEffect(() => {
@@ -27,8 +32,16 @@ function App() {
 
   const deleteWorker = (id) => {
     Axios.delete(`http://localhost:4000/delete/${id}`)
-    window.location.reload(false);
   }
+
+  const Save = (id) => {
+    Axios.put(`http://localhost:4000/update/${id}`, {
+        firstname:firstName,
+        lastname:lastName,
+        email:email,
+        contact:contact
+    })
+}
 
 
   return (
@@ -42,15 +55,21 @@ function App() {
               {
                 data.map((value) => {
                   return (
-                    <tr>
+                    <tr key={value.id}>
                       <td></td>
-                      <td>{edit ? <input type="text" className="form-control" id="exampleFormControlInput1" name="contact" placeholder={value.id} />  : `${value.id}`}</td>
-                      <td>{edit ? <input type="text" className="form-control" id="exampleFormControlInput1" name="contact" placeholder={value.firstname}/>  : `${value.firstname}`}</td>
-                      <td>{edit ? <input type="text" className="form-control" id="exampleFormControlInput1" name="contact" placeholder={value.lastname}/>  : `${value.lastname}`}</td>
-                      <td>{edit ? <input type="text" className="form-control" id="exampleFormControlInput1" name="contact" placeholder={value.email}/>  : `${value.email}`}</td>
-                      <td>{edit ? <input type="text" className="form-control" id="exampleFormControlInput1" name="contact" placeholder={value.contact}/> : `${value.contact}`}</td>
-                      <td>{edit ? <button type="button" class="btn btn-primary" >Save</button> : <FontAwesomeIcon icon={faEdit} onClick={() => { setEdit(!edit) }} />} </td>
-                      <td>{edit ? <button type="button" class="btn btn-primary" onClick={() => setEdit(!edit)}>Cancel</button> : <FontAwesomeIcon icon={faTrash} onClick={() => { deleteWorker(value.id) }} />}</td>
+                      <td>{value.id}</td>
+                      <td>{edit === value.id ? <input type="text" className="form-control"  name="firstname" placeholder={value.firstname} onChange={(e) => setFirstName(e.target.value)}/>
+                        : `${value.firstname}`}</td>
+                      <td>{edit === value.id ? <input type="text" className="form-control"  name="lastname" placeholder={value.lastname} onChange={(e) => setLastName(e.target.value)}/>
+                        : `${value.lastname}`}</td>
+                      <td>{edit === value.id ? <input type="text" className="form-control"  name="email" placeholder={value.email} onChange={(e) => setEmail(e.target.value)}/>
+                        : `${value.email}`}</td>
+                      <td>{edit === value.id ? <input type="text" className="form-control"  name="contact" placeholder={value.contact} onChange={(e) => setContact(e.target.value)} />
+                        : `${value.contact}`}</td>
+                      <td>{edit === value.id ? <button type="button" class="btn btn-primary" onClick={Save(value.id)}>Save</button>
+                        : <FontAwesomeIcon icon={faEdit} onClick={() => { setEdit(value.id) }} />} </td>
+                      <td>{edit === value.id ? <button type="button" class="btn btn-primary" onClick={() => setEdit(!edit)}>Cancel</button>
+                        : <FontAwesomeIcon icon={faTrash} onClick={() => { deleteWorker(value.id) }} />}</td>
                     </tr>
                   )
                 })

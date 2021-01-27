@@ -51,6 +51,20 @@ app.delete("/delete/:id", (req,res) => {
     })
 })
 
+app.put("/update/:id", (req,res) => {
+    const firstname = req.body.firstname;
+    const lastname = req.body.lastname;
+    const email = req.body.email;
+    const contact = req.body.contact;
+    const id = req.params.id;
+    
+    const sqlUpdate = `UPDATE workerss SET firstname = ? , lastname = ? , email = ? , contact = ? WHERE id = ${id}`;
+
+    db.query(sqlUpdate, [firstname,lastname,email,contact] ,(err, result) => {
+        console.log(result)
+    })
+})
+
 app.listen(4000, () => {
     console.log("app run on 4000")
 })
