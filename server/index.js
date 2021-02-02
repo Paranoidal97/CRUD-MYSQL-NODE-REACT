@@ -31,6 +31,14 @@ app.get("/get", (req,res) => {
     })
 })
 
+app.get("/get/:id", (req,res) => {
+    const id = req.params.id
+    const sqlSelect = "SELECT * FROM workerss WHERE id = ?;"
+    db.query(sqlSelect,[id],(err,result) => {
+        res.send(result)
+    })
+})
+
 app.post("/insert", (req,res) => {
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
@@ -52,15 +60,17 @@ app.delete("/delete/:id", (req,res) => {
 })
 
 app.put("/update/:id", (req,res) => {
+    const id = req.params.id;
+
     const firstname = req.body.firstname;
     const lastname = req.body.lastname;
     const email = req.body.email;
     const contact = req.body.contact;
-    const id = req.params.id;
     
-    const sqlUpdate = `UPDATE workerss SET firstname = ? , lastname = ? , email = ? , contact = ? WHERE id = ${id}`;
+    
+    const sqlUpdate = 'UPDATE workerss SET firstname = ? , lastname = ? , email = ? , contact = ? WHERE id = ?';
 
-    db.query(sqlUpdate, [firstname,lastname,email,contact] ,(err, result) => {
+    db.query(sqlUpdate, [firstname,lastname,email,contact, id] ,(err, result) => {
         console.log(result)
     })
 })

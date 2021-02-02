@@ -4,7 +4,6 @@ const TableHead = () => {
     return (
         <thead>
             <tr>
-                <th><input type="checkbox" id="checkall" /></th>
                 <th>id</th>
                 <th>First Name</th>
                 <th>Last Name</th>

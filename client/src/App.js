@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Axios from 'axios'
 import './App.css';
 
@@ -11,22 +11,30 @@ import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 // Components
 import TableHead from "./components/tableHead"
 import Navbar from "./components/navbar"
-
+import Modal from "./components/modal"
+import Search from './components/search'
+import Pagination from './components/pagination'
 
 function App() {
   const [data, setData] = useState([])
+  const [modalShow, setModalShow] = useState(false)
+  const [id, setId] = useState()
 
-  const [edit, setEdit] = useState(null)
+  // Pagination
 
-  const [firstName, setFirstName] = useState("")
-  const [lastName, setLastName] = useState("")
-  const [email, setEmail] = useState("")
-  const [contact, setContact] = useState("")
+  const ITEMS_PER_PAGE = 3;
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalItems, setTotalItems] = useState(0)
+
+  // Search
+
+  const [search, setSearch] = useState()
+  const [sorting, setSorting] = useState({ field: "", order: "" });
 
 
   useEffect(() => {
-    Axios.get('http://localhost:4000/get').then((respone) => {
-      setData(respone.data)
+    Axios.get('http://localhost:4000/get').then((response) => {
+      setData(response.data)
     });
   }, [])
 
@@ -34,14 +42,41 @@ function App() {
     Axios.delete(`http://localhost:4000/delete/${id}`)
   }
 
-  const Save = (id) => {
-    Axios.put(`http://localhost:4000/update/${id}`, {
-        firstname:firstName,
-        lastname:lastName,
-        email:email,
-        contact:contact
-    })
-}
+  const setVisible = (id) => {
+    setId(id);
+    setModalShow(true)
+  }
+
+  const memoData = useMemo(() => {
+    let computedData = data;
+
+    if (search) {
+      computedData = computedData.filter(
+        comment =>
+          comment.firstname.toLowerCase().includes(search.toLowerCase()) ||
+          comment.lastname.toLowerCase().includes(search.toLowerCase()) ||
+          comment.email.toLowerCase().includes(search.toLowerCase()) ||
+          comment.contact.toLowerCase().includes(search.toLowerCase())
+      );
+    }
+
+    setTotalItems(computedData.length);
+
+    //Sorting comments
+    if (sorting.field) {
+      const reversed = sorting.order === "asc" ? 1 : -1;
+      computedData = computedData.sort(
+        (a, b) =>
+          reversed * a[sorting.field].localeCompare(b[sorting.field])
+      );
+    }
+
+    //Current Page slice
+    return computedData.slice(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      (currentPage - 1) * ITEMS_PER_PAGE + ITEMS_PER_PAGE
+    );
+  }, [data, currentPage, search, sorting]);
 
 
   return (
@@ -49,33 +84,43 @@ function App() {
       <div className="row">
         <div className="col-md-12 ">
           <Navbar />
+          <div className="row m-2">
+            <Pagination 
+              total={totalItems}
+              itemsPerPage={ITEMS_PER_PAGE}
+              currentPage={currentPage}
+              onPageChange={page => setCurrentPage(page)} />
+            <div className="col-md-3">
+              <Search onSearch={(value) => {
+                setSearch(value);
+              setCurrentPage(1);
+              }
+            } />
+            </div>
+          </div>
           <table className="table table-striped">
             <TableHead />
             <tbody>
               {
-                data.map((value) => {
+                memoData.map((value) => {
                   return (
                     <tr key={value.id}>
-                      <td></td>
                       <td>{value.id}</td>
-                      <td>{edit === value.id ? <input type="text" className="form-control"  name="firstname" placeholder={value.firstname} onChange={(e) => setFirstName(e.target.value)}/>
-                        : `${value.firstname}`}</td>
-                      <td>{edit === value.id ? <input type="text" className="form-control"  name="lastname" placeholder={value.lastname} onChange={(e) => setLastName(e.target.value)}/>
-                        : `${value.lastname}`}</td>
-                      <td>{edit === value.id ? <input type="text" className="form-control"  name="email" placeholder={value.email} onChange={(e) => setEmail(e.target.value)}/>
-                        : `${value.email}`}</td>
-                      <td>{edit === value.id ? <input type="text" className="form-control"  name="contact" placeholder={value.contact} onChange={(e) => setContact(e.target.value)} />
-                        : `${value.contact}`}</td>
-                      <td>{edit === value.id ? <button type="button" class="btn btn-primary" onClick={Save(value.id)}>Save</button>
-                        : <FontAwesomeIcon icon={faEdit} onClick={() => { setEdit(value.id) }} />} </td>
-                      <td>{edit === value.id ? <button type="button" class="btn btn-primary" onClick={() => setEdit(!edit)}>Cancel</button>
-                        : <FontAwesomeIcon icon={faTrash} onClick={() => { deleteWorker(value.id) }} />}</td>
+                      <td>{value.firstname}</td>
+                      <td>{value.lastname}</td>
+                      <td>{value.email}</td>
+                      <td>{value.contact}</td>
+                      <td><FontAwesomeIcon icon={faEdit} onClick={() => { setVisible(value.id) }} /></td>
+                      <td><FontAwesomeIcon icon={faTrash} onClick={() => { deleteWorker(value.id) }} /></td>
                     </tr>
                   )
                 })
               }
             </tbody>
           </table>
+          {
+            modalShow ? <Modal id={id} show={modalShow} remove={() => setModalShow(false)} /> : null
+          }
         </div>
       </div>
     </div>
