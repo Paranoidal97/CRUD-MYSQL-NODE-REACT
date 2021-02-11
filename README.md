@@ -11,7 +11,7 @@
   </p>
 </p>
 
-![screencapture-lukaszbiernat-netlify-app-2020-12-15-20_48_39](https://user-images.githubusercontent.com/46970261/102265135-f6f4c980-3f16-11eb-9494-922e94bfc92a.png)
+![](https://user-images.githubusercontent.com/46970261/107596122-02165e00-6c17-11eb-8d5d-6e637a021d80.gif)
 
 
 
@@ -33,7 +33,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-The application written in react.js is based on imgur api.It has features such as creating and publishing albums, adding and removing albums or photos and selecting a picture of the main album. The whole is protected by Auth0. The project also has implemented the possibility of sending emails via email.js.
+My first CRUD application using React as frontend and Node.js-Express server as backend with MySQL as database service.This is a typical crud application that has capabilities such as adding an employee to the database, deleting and editing. 
 
 ### Built With
 
