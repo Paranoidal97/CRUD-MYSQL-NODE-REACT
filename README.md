@@ -33,7 +33,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-My first CRUD application using React as frontend and Node.js-Express server as backend with MySQL as database service.This is a typical crud application that has capabilities such as adding an employee to the database, deleting and editing. 
+My first CRUD application using React as frontend and Node.js-Express server as backend with MySQL as database service. This is a typical crud application that has capabilities such as adding an employee to the database, deleting and editing. It also has implemented the ability to search records and pagination.
 
 ### Built With
 
